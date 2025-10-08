@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
+using Microsoft.EntityFrameworkCore.Design;
 namespace BankAPI.DAL
 {
     public class YouBakingDbContext : DbContext
