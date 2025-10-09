@@ -87,17 +87,46 @@ namespace BankAPI.Services.Implementations
 
         public Account GetByAccountNumber(string AccountNumber)
         {
-            throw new NotImplementedException();
+            var account = _dbcontextFactory.Accounts.Where(x => x.AccountNumberGenerated == AccountNumber).FirstOrDefault();
+            if (account == null) return null;
+            return account;
         }
 
         public Account GetById(int id)
         {
-            throw new NotImplementedException();
+       var account = _dbcontextFactory.Accounts.Where(x=> x.Id == id).FirstOrDefault();
+            if (account == null) return null;
+            return account;
         }
 
         public void Update(Account account, string pin = null)
         {
-            throw new NotImplementedException();
+           var accountToUpdate = _dbcontextFactory.Accounts.Where(x=>x.Email == account.Email).SingleOrDefault();
+            if (accountToUpdate == null) throw new ApplicationException("Account does not exists");
+           if(!string.IsNullOrWhiteSpace(account.Email))
+            {
+                // cannot change account number
+                if(_dbcontextFactory.Accounts.Any(x=> x.Email == account.Email)) throw new ApplicationException("An account already exists with this email"+ account.Email);
+            }
+            // update account properties
+            accountToUpdate.Name = account.Name;
+            accountToUpdate.LastName = account.LastName;
+            accountToUpdate.AccountName = account.AccountName;
+            accountToUpdate.PhoneNumber = account.PhoneNumber;
+            accountToUpdate.Email = account.Email;
+            accountToUpdate.CurrentAccountBalance = account.CurrentAccountBalance;
+            accountToUpdate.AccountType = account.AccountType;
+            accountToUpdate.DateLastUpdatedAt = DateTime.Now;
+            // update pin if it was entered
+            if (!string.IsNullOrWhiteSpace(pin))
+            {
+                byte[] pinHash, pinSalt;
+                CreatePinHash(pin, out pinHash, out pinSalt);
+                accountToUpdate.pinHash = pinHash;
+                accountToUpdate.pinSalt = pinSalt;
+            }
+            _dbcontextFactory.Accounts.Update(accountToUpdate);
+            _dbcontextFactory.SaveChanges();
         }
     }
 }
