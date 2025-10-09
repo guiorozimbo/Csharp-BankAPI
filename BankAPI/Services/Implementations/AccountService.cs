@@ -103,28 +103,46 @@ namespace BankAPI.Services.Implementations
         {
            var accountToUpdate = _dbcontextFactory.Accounts.Where(x=>x.Email == account.Email).SingleOrDefault();
             if (accountToUpdate == null) throw new ApplicationException("Account does not exists");
-           if(!string.IsNullOrWhiteSpace(account.Email))
+            // writing to a property that is not null or whitespace for email
+            if (!string.IsNullOrWhiteSpace(account.Email))
+            {
+                // cannot change account email
+                if(_dbcontextFactory.Accounts.Any(x=> x.Email == account.Email)) throw new ApplicationException("An account already exists with this email"+ account.Email);
+                accountToUpdate.Email = account.Email;
+            }
+            if (!string.IsNullOrWhiteSpace(account.PhoneNumber))
             {
                 // cannot change account number
-                if(_dbcontextFactory.Accounts.Any(x=> x.Email == account.Email)) throw new ApplicationException("An account already exists with this email"+ account.Email);
+                if (_dbcontextFactory.Accounts.Any(x => x.PhoneNumber == account.PhoneNumber)) throw new ApplicationException("An account already exists with this phone" + account.PhoneNumber);
+                accountToUpdate.PhoneNumber = account.PhoneNumber;
+            }
+          //  if (!string.IsNullOrWhiteSpace(pin))
+            {
+               
+               
             }
             // update account properties
             accountToUpdate.Name = account.Name;
             accountToUpdate.LastName = account.LastName;
             accountToUpdate.AccountName = account.AccountName;
-            accountToUpdate.PhoneNumber = account.PhoneNumber;
-            accountToUpdate.Email = account.Email;
+            
+           
             accountToUpdate.CurrentAccountBalance = account.CurrentAccountBalance;
             accountToUpdate.AccountType = account.AccountType;
             accountToUpdate.DateLastUpdatedAt = DateTime.Now;
             // update pin if it was entered
             if (!string.IsNullOrWhiteSpace(pin))
             {
+                // cannot change account Pin
+                // check if pin is not null or whitespace already taken
                 byte[] pinHash, pinSalt;
                 CreatePinHash(pin, out pinHash, out pinSalt);
                 accountToUpdate.pinHash = pinHash;
                 accountToUpdate.pinSalt = pinSalt;
+
             }
+            accountToUpdate.DateLastUpdatedAt = DateTime.Now;
+
             _dbcontextFactory.Accounts.Update(accountToUpdate);
             _dbcontextFactory.SaveChanges();
         }
