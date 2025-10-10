@@ -8,8 +8,9 @@ namespace BankAPI.Profiles
         public AutomapperProfiles()
         {
             // CreateMap<Source, Destination>();
-            CreateMap<RegisterNewAccountModel,Account>();
-            CreateMap<UpdateAccountModel,Account>();
-            CreateMap<Account,GetAccountModel>();
+            CreateMap<RegisterNewAccountModel, Account>();
+            CreateMap<UpdateAccountModel, Account>();
+            CreateMap<Account, GetAccountModel>();
         }
+    }
 }
