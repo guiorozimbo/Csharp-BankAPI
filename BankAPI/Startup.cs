@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BankAPI.Service;
+using BankAPI.Services.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +27,23 @@ namespace BankAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddSwaggerGen(services =>
+            {
+                services.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "BankAPI",
+                    Version = "v2",
+                    Description ="we were crazy enough to builda Bank API",
+                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                    {
+                        Name = "Guilherme Ramos",
+                        Email = "guilhermegv890@gmail.com",
+                        Url= new Uri("https://github.com/guiorozimbo/Csharp-BankAPI")
+                    }
+                });
+            });
             services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
@@ -40,7 +59,15 @@ namespace BankAPI
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BankAPI v1"));
+                app.UseSwaggerUI(c =>
+
+                {
+                    var prefix = string.IsNullOrEmpty(c.RoutePrefix) ? "." : "..";
+                    c.SwaggerEndpoint($"{prefix}/swagger/v2/swagger.json", "BankAPI v2");
+                   // c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+                });
+                
+                //c.SwaggerEndpoint("/swagger/v1/swagger.json", "BankAPI v1"));
             }
             app.UseHttpsRedirection();
             app.UseRouting();
