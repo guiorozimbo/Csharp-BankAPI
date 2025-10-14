@@ -64,7 +64,7 @@ namespace BankAPI.Controllers
             var clearneadAccount = _mapper.Map<GetAccountModel>(account);
             return Ok(clearneadAccount);
         }
-        [HttpPost]
+        [HttpPut]
         [Route("update_account")]
         public IActionResult UpdateAccount([FromBody] UpdateAccountModel model,string Pin)
         {
