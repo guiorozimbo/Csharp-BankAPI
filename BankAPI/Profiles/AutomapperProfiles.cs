@@ -7,7 +7,7 @@ namespace BankAPI.Profiles
     {
         public AutomapperProfiles()
         {
-            // CreateMap<Source, Destination>();
+            //CreateMap<SourceModel, Destination>();
             CreateMap<RegisterNewAccountModel, Account>();
             CreateMap<UpdateAccountModel, Account>();
             CreateMap<Account, GetAccountModel>();

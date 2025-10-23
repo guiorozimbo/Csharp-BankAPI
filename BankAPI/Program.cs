@@ -1,15 +1,35 @@
+using BankAPI.DAL;
+using BankAPI.Service;
+using BankAPI.Services.Implementations;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using BankAPI.Profiles;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configurar DbContext (exemplo usando SQL Server)
+builder.Services.AddDbContext<YouBakingDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BankDB"))
+);
 
+// Register AccountService
+builder.Services.AddScoped<IAccountService, AccountService>();
+//builder.Services.AddAutoMapper(typeof(BankAPI.Profiles.AutomapperProfiles).Assembly);
+
+builder.Services.AddAutoMapper(typeof(AutomapperProfiles));
+
+
+//builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// Register controllers
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Registrar Swagger (opcional)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -17,9 +37,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

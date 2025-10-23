@@ -10,7 +10,7 @@ namespace BankAPI.Controllers
     [Route("api/[controller]")]
     public class AccountsController : ControllerBase
     {
-        private IAccountService _accountService;
+        private readonly IAccountService _accountService;
         IMapper _mapper;
         public AccountsController(IAccountService accountService, IMapper mapper)
         {

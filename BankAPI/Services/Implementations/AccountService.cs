@@ -13,7 +13,7 @@ namespace BankAPI.Services.Implementations
 {
     public class AccountService : IAccountService
     {
-        private YouBakingDbContext _dbcontextFactory;
+        private readonly YouBakingDbContext _dbcontextFactory;
 
         public AccountService(YouBakingDbContext dbcontextFactory)
         {
