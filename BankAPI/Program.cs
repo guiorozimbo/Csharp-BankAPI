@@ -7,7 +7,7 @@ using BankAPI.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar DbContext (exemplo usando SQL Server)
+// Configure DbContext (exempla used SQL Server)
 builder.Services.AddDbContext<YouBakingDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BankDB"))
 );
@@ -24,7 +24,7 @@ builder.Services.AddAutoMapper(typeof(AutomapperProfiles));
 // Register controllers
 builder.Services.AddControllers();
 
-// Registrar Swagger (opcional)
+// Register Swagger (optional)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

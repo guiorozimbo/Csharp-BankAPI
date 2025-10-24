@@ -31,7 +31,7 @@ namespace BankAPI.Models
         Random random = new Random();
         public Account()
         {
-            AccountNumberGenerated = Convert.ToString((long)random.NextDouble()* 9_000_000_000L+1_000_000_000L);// wee did generate a 10 digit account number
+            AccountNumberGenerated = Convert.ToString((long)Math.Floor(random.NextDouble() * 9_000_000_000L + 1_000_000_000L));// wee did generate a 10 digit account number
             // also AccountName property is a combination of Name and LastName properties
             AccountName = $"{Name} {LastName}";
         }

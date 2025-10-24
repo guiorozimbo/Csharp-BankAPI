@@ -40,18 +40,22 @@ namespace BankAPI.Controllers
         [Route("authenticate")]
         public IActionResult Authenticate([FromBody] AuthenticateModel model)
         {
-            if (ModelState.IsValid) return BadRequest(model);
-           return Ok(_accountService.Authenticate(model.AccountNumber.ToString(), model.Pin));
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-           // var account = _accountService.GetById(model);
-           // var clearneadAccount = _mapper.Map<GetAccountModel>(account);
-           // return Ok(clearneadAccount);
+            var account = _accountService.Authenticate(model.AccountNumber.ToString(), model.Pin);
+            return Ok(account);
+            // var account = _accountService.GetById(model);
+            // var clearneadAccount = _mapper.Map<GetAccountModel>(account);
+            // return Ok(clearneadAccount);
         }
         [HttpGet]
         [Route("get_by_account_number")]
         public IActionResult GetByAccountNumber([FromQuery] string AccountNumber)
         {
-            if(!Regex.IsMatch(AccountNumber, @"^[0][1-9]\d{9}$^[1-9]\d{9}$")) return BadRequest("Account number must be a 10-digit number.");
+            if (!Regex.IsMatch(AccountNumber, @"^\d{10}$"))
+                return BadRequest("Account number must be a 10-digit number.");
+
             var account = _accountService.GetByAccountNumber(AccountNumber);
             var clearneadAccount = _mapper.Map<GetAccountModel>(account);
             return Ok(clearneadAccount);

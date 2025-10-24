@@ -12,7 +12,7 @@ namespace BankAPI.Models
       
         public DateTime DateLastUpdatedAt { get; set; } = DateTime.UtcNow;
         [Required]
-        [RegularExpression(@"^\d{4}$", ErrorMessage = "Pin must be exactly 4 digits.")]
+        [RegularExpression(@"^[0-9]{4}$", ErrorMessage = "Pin must be exactly 4 digits.")]
         [Compare("Pin", ErrorMessage = "Pin do not match.")]
         public string Pin { get; set; }
         public string ConfirmPin { get; set; }

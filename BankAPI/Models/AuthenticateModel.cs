@@ -5,9 +5,11 @@ namespace BankAPI.Models
     public class AuthenticateModel
     {
         [Required]
-        [RegularExpression(@"^[0][1-9]\d{9}$^[1-9]\d{9}$", ErrorMessage = "Account number must be a 10-digit number.")]
-        public int AccountNumber { get; set; }
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Account number must be a 10-digit number.")]
+        public string AccountNumber { get; set; }
+
         [Required]
         public string Pin { get; set; }
     }
+
 }
