@@ -1,12 +1,12 @@
 ﻿
 using BankAPI.Models;
-using System.Transactions;
+using System;
 
 namespace BankAPI.Services.Interface
 {
     public interface ITransactionService
     {
-        Response CreateNewTransaction(System.Transactions.Transaction transaction);
+        Response CreateNewTransaction(Transaction transaction);
         Response FindTransactionByDate(DateTime date);
         Response MakeDeposit(string AccountNumber, decimal Amount,string TransactionPin);
         Response MakeWithdraw(string AccountNumber, decimal Amount, string TransactionPin);

@@ -16,6 +16,8 @@ namespace BankAPI.Models
         public string Transactionparticulars { get; set; } // Description or details of the transaction
         public TranType TransactionType { get; set; } // e.g., Credit, Debit
         public DateTime TransactionDate { get; set; } = DateTime.UtcNow;
+        public decimal TransactionAmount { get; internal set; }
+
         public Transaction()
         {
             // Generate a unique reference for the transaction
