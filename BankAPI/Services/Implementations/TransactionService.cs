@@ -74,10 +74,10 @@ namespace BankAPI.Services.Implementations
                 destinationAccount.CurrentAccountBalance += Amount;
 
                 // check if source account has sufficient balance
-                if ((_dbcontextFactory.Entry(sourceAccount).State== Microsoft.EntityFrameworkCore.EntityState.Modified) && (_dbcontextFactory.Entry(destinationAccount).State == Microsoft.EntityFrameworkCore.EntityState.Modified))
+                if ((_dbcontextFactory.Entry(sourceAccount).State == Microsoft.EntityFrameworkCore.EntityState.Modified) && (_dbcontextFactory.Entry(destinationAccount).State == Microsoft.EntityFrameworkCore.EntityState.Modified))
                 {
                     // so transaction can proceed successfull
-                    transaction.TransactionStatus= TranStatus.Success;
+                    transaction.TransactionStatus = TranStatus.Success;
                     response.ResponseCode = "00";
                     response.ResponseMessage = "Insufficient funds in the source account.";
                     response.Data = null;
@@ -89,30 +89,35 @@ namespace BankAPI.Services.Implementations
                     response.ResponseCode = "02";
                     response.ResponseMessage = "Transaction failed.";
                     response.Data = null;
-                    transaction.TransactionUniqueReference = Guid.NewGuid().ToString();
-                    transaction.TransactionSourceAccount = sourceAccount.AccountNumberGenerated;
-                    transaction.TransactionDestinationAccount = destinationAccount.AccountNumberGenerated;
-                    transaction.TransactionType = TranType.Deposit;
-                    transaction.Transactionparticulars = $"Deposit of {Amount} to account {AccountNumber}";
-                    transaction.TransactionDate = DateTime.Now;
-                    // save changes to database}
+                    /*ansaction.TransactionUniqueReference = Guid.NewGuid().ToString();
+                     transaction.TransactionSourceAccount = sourceAccount.AccountNumberGenerated;
+                     transaction.TransactionDestinationAccount = destinationAccount.AccountNumberGenerated;
+                     transaction.TransactionType = TranType.Deposit;
+                     transaction.Transactionparticulars = $"Deposit of {Amount} to account {AccountNumber}";
+                     transaction.TransactionDate = DateTime.Now;
+                     // save changes to database}*/
                 }
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"Error making deposit: {ex.Message}");
-                response.ResponseCode = "96";
-                response.ResponseMessage = "System malfunction. Please try again later.";
-                response.Data = null;
-                return response;
+               // response.ResponseCode = "96";
+               // response.ResponseMessage = "System malfunction. Please try again later.";
+                //response.Data = null;
+               // return response;
             }
             //set transaction details here
             transaction.TransactionType = TranType.Deposit;
             transaction.TransactionSourceAccount = _ourBankSettlementAccount;
             transaction.TransactionDestinationAccount = AccountNumber;
-            transaction.Transactionparticulars = $"Deposit of to account {JsonConvert.SerializeObject(transaction.TransactionSourceAccount)}";
+            transaction.Transactionparticulars = $"New transaction from source => {JsonConvert.SerializeObject(transaction.TransactionSourceAccount)} to destination account =>{JsonConvert.SerializeObject(transaction.TransactionDestinationAccount)} on date => {transaction.TransactionDate} for amount => {JsonConvert.SerializeObject(transaction.TransactionAmount)} transaction type => {JsonConvert.SerializeObject(transaction.TransactionType)} transaction status {JsonConvert.SerializeObject(transaction.TransactionStatus)}";
             transaction.TransactionAmount = Amount;
             transaction.TransactionDate = DateTime.Now;
-            transaction.TransactionUniqueReference = Guid.NewGuid().ToString();
+            // transaction.TransactionUniqueReference = Guid.NewGuid().ToString();
+            // All done, save db changes
+            _dbcontextFactory.Add(transaction);
+            _dbcontextFactory.SaveChanges();
+            return response;
         }
 
         public Response MakeTransfer(string FromAccount, string ToAccount, decimal Amount, string TransactionPin)
@@ -122,7 +127,71 @@ namespace BankAPI.Services.Implementations
 
         public Response MakeWithdraw(string AccountNumber, decimal Amount, string TransactionPin)
         {
-            throw new NotImplementedException();
+            //implement withdrawal now ...
+
+            //make withdrawal
+            Response response = new Response();
+            Account sourceAccount;
+            Account destinationAccount;
+            Transaction transaction = new Transaction();
+            // find our bank settlement account for user deposit autheticate
+            var authUser = _accountService.Authenticate(AccountNumber, TransactionPin);
+            if (authUser == null) throw new Exception("Authentication failed. Invalid account number or transaction pin.");
+            // so validation passed
+            try
+            {
+                //for deposit our source account is our bank settlement is destination getting money to user
+                sourceAccount = _accountService.GetByAccountNumber(AccountNumber);
+                destinationAccount = _accountService.GetByAccountNumber(_ourBankSettlementAccount);
+                //now, lets update account balances
+                sourceAccount.CurrentAccountBalance -= Amount;
+                destinationAccount.CurrentAccountBalance += Amount;
+
+                // check if source account has sufficient balance
+                if ((_dbcontextFactory.Entry(sourceAccount).State == Microsoft.EntityFrameworkCore.EntityState.Modified) && (_dbcontextFactory.Entry(destinationAccount).State == Microsoft.EntityFrameworkCore.EntityState.Modified))
+                {
+                    // so transaction can proceed successfull
+                    transaction.TransactionStatus = TranStatus.Success;
+                    response.ResponseCode = "00";
+                    response.ResponseMessage = "Insufficient funds in the source account.";
+                    response.Data = null;
+                    return response;
+                }
+                else
+                {                     // proceed to create transaction record
+                    transaction.TransactionStatus = TranStatus.Failed;
+                    response.ResponseCode = "02";
+                    response.ResponseMessage = "Transaction failed.";
+                    response.Data = null;
+                    /*ansaction.TransactionUniqueReference = Guid.NewGuid().ToString();
+                     transaction.TransactionSourceAccount = sourceAccount.AccountNumberGenerated;
+                     transaction.TransactionDestinationAccount = destinationAccount.AccountNumberGenerated;
+                     transaction.TransactionType = TranType.Deposit;
+                     transaction.Transactionparticulars = $"Deposit of {Amount} to account {AccountNumber}";
+                     transaction.TransactionDate = DateTime.Now;
+                     // save changes to database}*/
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error making deposit: {ex.Message}");
+                // response.ResponseCode = "96";
+                // response.ResponseMessage = "System malfunction. Please try again later.";
+                //response.Data = null;
+                // return response;
+            }
+            //set transaction details here
+            transaction.TransactionType = TranType.withdrawal;
+            transaction.TransactionSourceAccount = _ourBankSettlementAccount;
+            transaction.TransactionDestinationAccount = AccountNumber;
+            transaction.Transactionparticulars = $"New transaction from source => {JsonConvert.SerializeObject(transaction.TransactionSourceAccount)} to destination account =>{JsonConvert.SerializeObject(transaction.TransactionDestinationAccount)} on date => {transaction.TransactionDate} for amount => {JsonConvert.SerializeObject(transaction.TransactionAmount)} transaction type => {JsonConvert.SerializeObject(transaction.TransactionType)} transaction status {JsonConvert.SerializeObject(transaction.TransactionStatus)}";
+            transaction.TransactionAmount = Amount;
+            transaction.TransactionDate = DateTime.Now;
+            // transaction.TransactionUniqueReference = Guid.NewGuid().ToString();
+            // All done, save db changes
+            _dbcontextFactory.Add(transaction);
+            _dbcontextFactory.SaveChanges();
+            return response;
         }
     }
 }
