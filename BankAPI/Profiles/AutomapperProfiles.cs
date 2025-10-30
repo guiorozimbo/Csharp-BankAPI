@@ -11,6 +11,7 @@ namespace BankAPI.Profiles
             CreateMap<RegisterNewAccountModel, Account>();
             CreateMap<UpdateAccountModel, Account>();
             CreateMap<Account, GetAccountModel>();
+            CreateMap<TrasanctionRequestDto, Transaction>();
         }
     }
 }
