@@ -3,6 +3,7 @@ using BankAPI.DAL;
 using BankAPI.Profiles;
 using BankAPI.Service;
 using BankAPI.Services.Implementations;
+using BankAPI.Services.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,7 @@ namespace BankAPI
                 options.UseSqlServer(Configuration.GetConnectionString("BankDB")));
 
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<ITransactionService, TransactionService>();
             services.AddAutoMapper(typeof(AutomapperProfiles));
 
             services.AddEndpointsApiExplorer();
