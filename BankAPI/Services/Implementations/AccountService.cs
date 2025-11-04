@@ -101,7 +101,10 @@ namespace BankAPI.Services.Implementations
 
         public void Update(Account account, string pin = null)
         {
-           var accountToUpdate = _dbcontextFactory.Accounts.Where(x=>x.Email == account.Email).SingleOrDefault();
+            var accountToUpdate = _dbcontextFactory.Accounts
+      .Where(x => x.Id == account.Id)
+      .SingleOrDefault();
+
             if (accountToUpdate == null) throw new ApplicationException("Account does not exists");
             // writing to a property that is not null or whitespace for email
             if (!string.IsNullOrWhiteSpace(account.Email))

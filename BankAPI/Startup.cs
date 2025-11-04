@@ -4,6 +4,7 @@ using BankAPI.Profiles;
 using BankAPI.Service;
 using BankAPI.Services.Implementations;
 using BankAPI.Services.Interface;
+using BankAPI.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,7 @@ namespace BankAPI
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddAutoMapper(typeof(AutomapperProfiles));
-
+            services.Configure<AppSettings>(Configuration.GetSection("Appsettings"));
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {

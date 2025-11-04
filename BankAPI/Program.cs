@@ -1,9 +1,11 @@
+using AutoMapper;
 using BankAPI.DAL;
+using BankAPI.Profiles;
 using BankAPI.Service;
 using BankAPI.Services.Implementations;
-using AutoMapper;
+using BankAPI.Services.Interface;
+using BankAPI.Utils;
 using Microsoft.EntityFrameworkCore;
-using BankAPI.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,10 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 //builder.Services.AddAutoMapper(typeof(BankAPI.Profiles.AutomapperProfiles).Assembly);
 
 builder.Services.AddAutoMapper(typeof(AutomapperProfiles));
+
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
